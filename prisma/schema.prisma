@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model WebhookEvent {
+  id            String   @id @default(uuid())
+  channel       String
+  messageUuid   String   @unique
+  to            String
+  from          String
+  timestamp     DateTime
+  contextStatus String
+  messageType   String
+  location      Location?
+  createdAt     DateTime @default(now())
+}
+
+model Location {
+  id        String  @id @default(uuid())
+  webhookId String  @unique
+  lat       Float
+  long      Float
+  webhook   WebhookEvent @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+}
